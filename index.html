@@ -86,8 +86,13 @@
         }
         .project-card:hover { transform: translateY(-10px) scale(1.01); background: rgba(40, 40, 40, 0.4); border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);}
         .project-card > * { pointer-events: none; } 
-        .project-card video.cover-video, .project-card img.cover-image { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 16px; margin-bottom: 30px; transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); display: block; background-color: #111;}
-        .project-card:hover video.cover-video, .project-card:hover img.cover-image { transform: scale(1.03); }
+        
+        /* 优化：给视频盒子加上平滑占位色彩，并且强制取消鼠标抢夺 */
+        .project-card video.cover-video { 
+            width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 16px; margin-bottom: 30px; 
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); display: block; background-color: #111;
+        }
+        .project-card:hover video.cover-video { transform: scale(1.03); }
         .project-card h3 { font-size: 1.8rem; margin-bottom: 12px; color: #ffffff; letter-spacing: 0.5px;}
         .project-card p { color: #a1a1a6; font-size: 1rem; margin-bottom: 25px; line-height: 1.7;}
         .tags { display: flex; gap: 12px; flex-wrap: wrap; }
@@ -111,7 +116,6 @@
         .detail-header { text-align: left; margin-bottom: 60px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 40px; }
         .detail-header h1 { font-size: 2.8rem; margin-bottom: 15px; font-weight: 800; line-height: 1.2; letter-spacing: -0.5px;}
         
-        /* 🎯 重点保留了你的文字介绍块样式 */
         .info-block { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px; margin-bottom: 60px; text-align: left; }
         .info-item h4 { color: #86868b; font-size: 0.85rem; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 2px; }
         .info-item p { color: #f5f5f7; font-size: 1rem; line-height: 1.7;}
@@ -145,42 +149,42 @@
         <h2 class="section-title reveal">— 精选项目 —</h2>
 
         <div class="project-card reveal" onclick="openDetail('detailSpark')">
-            <video autoplay loop muted playsinline class="cover-video"><source src="cover5.mp4" type="video/mp4"></video>
+            <video loop muted playsinline preload="none" class="cover-video"><source src="cover5.mp4" type="video/mp4"></video>
             <h3>「SPARK+」能量气泡饮视觉全案</h3>
             <p>探索 AI 在新消费领域的全链路赋能。从产品 KV、包装设计到电商详情与视频分镜，利用 AIGC 工作流实现高效率落地的商业视觉资产。</p>
             <div class="tags"><span># 新消费品广告</span><span># 包装全案设计</span><span># AIGC全链路</span></div>
         </div>
 
         <div class="project-card reveal" onclick="openDetail('detailFutureSense')">
-            <video autoplay loop muted playsinline class="cover-video"><source src="cover2.MP4" type="video/mp4"></video>
+            <video loop muted playsinline preload="none" class="cover-video"><source src="cover2.mp4" type="video/mp4"></video>
             <h3>《Future Sense Festival》青年艺术节主视觉</h3>
             <p>沉浸式青年艺术节视觉系统设计。运用 ComfyUI 工作流实现数字自然（Cyber Nature）的高质感稳定输出。</p>
             <div class="tags"><span># AIGC主视觉</span><span># ComfyUI工作流</span></div>
         </div>
 
         <div class="project-card reveal" onclick="openDetail('detailWuchuan')">
-            <video autoplay loop muted playsinline class="cover-video"><source src="cover.mp4" type="video/mp4"></video>
+            <video loop muted playsinline preload="none" class="cover-video"><source src="cover.mp4" type="video/mp4"></video>
             <h3>「雾川 WUCHUAN」城市气味香氛品牌设计</h3>
             <p>东方极简静物美学，打通从 MJ 商业概念到 SD 高精度视觉落地的全链路闭环。</p>
             <div class="tags"><span># AIGC 视觉构建</span><span># 品牌概念全案</span></div>
         </div>
 
         <div class="project-card reveal" onclick="openDetail('detailIP')">
-            <video autoplay loop muted playsinline class="cover-video"><source src="cover3.mp4" type="video/mp4"></video>
+            <video loop muted playsinline preload="none" class="cover-video"><source src="cover3.mp4" type="video/mp4"></video>
             <h3>《凤小啾 FENGXIAOJIU》3D 潮玩 IP 全案</h3>
             <p>从数字资产到潮玩盲盒全生命周期企划。打磨高质感的 3D 盲盒材质表现，完成从三视图到包装的系统设计。</p>
             <div class="tags"><span># 3D潮玩设计</span><span># 盲盒企划</span></div>
         </div>
         
         <div class="project-card reveal" onclick="openDetail('detailAura')">
-            <video autoplay loop muted playsinline class="cover-video"><source src="cover4.mp4" type="video/mp4"></video>
+            <video loop muted playsinline preload="none" class="cover-video"><source src="cover4.mp4" type="video/mp4"></video>
             <h3>「AURA 光冕」先锋首饰品牌全案</h3>
             <p>探索独立珠宝品牌的数字化构建。结合 3D 精密建模与 AIGC 视觉工作流，完成从品牌视觉到 Lookbook 的全链路设计。</p>
             <div class="tags"><span># 首饰产品设计</span><span># AIGC时尚大片</span></div>
         </div>
 
         <div class="project-card reveal" onclick="openDetail('detailNova')">
-            <video autoplay loop muted playsinline class="cover-video"><source src="cover6.mp4" type="video/mp4"></video>
+            <video loop muted playsinline preload="none" class="cover-video"><source src="cover6.mp4" type="video/mp4"></video>
             <h3>「NOVA SCALP」智能头皮护理仪工业设计</h3>
             <p>探索科技与个护的融合。从产品定义、严谨的爆炸结构拆解到极具呼吸感的 CMF 材质渲染。</p>
             <div class="tags"><span># 工业设计</span><span># CMF材质表现</span></div>
@@ -236,7 +240,7 @@
                 </div>
             </div>
             <div class="detail-gallery">
-                <img src="b82ea666-32af-4b04-bc75-3bce024d17b2.png" alt="主视觉"><img src="1.png"><img src="2.png"><img src="3.png"><img src="4.png"><img src="2c3c9cb0-597d-4085-b67e-454ad3bf930f.png"><img src="a4adbc92-74cb-4b4a-a8ef-edad080eab67.png"><img src="0afe1c7b-589a-4b2d-b29b-ec2c04988505.png"><img src="fee3b895-510f-4074-b63d-8ce245238867.png"><img id="magic-comfy-img" alt="ComfyUI">
+                <img src="b82ea666-32af-4b04-bc75-3bce024d17b2.png" alt="主视觉"><img src="1.png"><img src="2.png"><img src="3.png"><img src="4.png"><img src="2c3c9cb0-597d-4085-b67e-454ad3bf930f.png"><img src="a4adbc92-74cb-4b4a-a8ef-edad080eab67.png"><img src="0afe1c7b-589a-4b2d-b29b-ec2c04988505.png"><img src="fee3b895-510f-4074-b63d-8ce245238867.png"><img id="magic-comfy-img">
             </div>
         </div>
     </div>
@@ -262,9 +266,7 @@
                     <p>展现了“懂实体产品逻辑（工业设计底子）+ 掌握 AI 顶级生产力”的复合能力，极大地缩短了虚拟消费品牌从概念创意到高精度视觉资产的研发周期。</p>
                 </div>
             </div>
-            <div class="detail-gallery">
-                <img src="pic1.png"><img src="pic2.png"><img src="pic3.png"><img src="pic4.png"><img src="pic5.png"><img src="wuchuan.png">
-            </div>
+            <div class="detail-gallery"><img src="pic1.png"><img src="pic2.png"><img src="pic3.png"><img src="pic4.png"><img src="pic5.png"><img src="wuchuan.png"></div>
         </div>
     </div>
 
@@ -289,9 +291,7 @@
                     <p>输出了标准工业三视图、包装设计概念，并完成了多维度的主题盲盒系列化延展（如：宇航员、魔法师、新春款等），具备直接对接潮玩供应链的成熟度。</p>
                 </div>
             </div>
-            <div class="detail-gallery">
-                <img src="封面.png"><img src="三视图注释.png"><img src="c85d1970-3cfa-4207-af40-b661847b61d2.png"><img src="宇航员.png"><img src="魔法师.png"><img src="新春款.png"><img src="甜品.png"><img src="校服.png"><img src="睡衣款.png">
-            </div>
+            <div class="detail-gallery"><img src="封面.png"><img src="三视图注释.png"><img src="c85d1970-3cfa-4207-af40-b661847b61d2.png"><img src="宇航员.png"><img src="魔法师.png"><img src="新春款.png"><img src="甜品.png"><img src="校服.png"><img src="睡衣款.png"></div>
         </div>
     </div>
 
@@ -316,9 +316,7 @@
                     <p>打破传统珠宝宣发的局限，运用 AIGC 工作流高效生成具备极强奢侈品感的高级时尚模特佩戴图（Lookbook）与高端商业空间氛围，极大拓展了数字资产的商业边界。</p>
                 </div>
             </div>
-            <div class="detail-gallery">
-                <img src="b1a79722-bb86-4372-bc14-6fc55147543c.png"><img src="2c668bbd-e1a3-4eb8-85c0-960d716d1795.png"><img src="1852949e-c9b3-463c-a382-1e6bdc92c6ab.png"><img src="a7069632-c21a-4b13-bff4-3bbbf3bd02ea.png"><img src="4c5988e7-30a4-44d3-8ae3-d6ef2a21cbcd.png"><img src="0f798a55-e280-462b-bd4f-333261ef516e.png"><img src="98d46d5c-ed58-4aff-bfb2-b1dd9bc7d6da.png"><img src="98f2538a-96f0-40a1-a25c-7a3c8e442158.png"><img src="8b042062-5678-4084-ac04-0b5295df8aa8.png"><img src="25ac86f0-a0a2-4658-b98a-df9f1bba436d.png"><img src="38c7018f-1588-4e89-91cd-d159fe97d26e.png"><img src="872555b7-2c55-4ca2-ad53-68beb904abad.png">
-            </div>
+            <div class="detail-gallery"><img src="b1a79722-bb86-4372-bc14-6fc55147543c.png"><img src="2c668bbd-e1a3-4eb8-85c0-960d716d1795.png"><img src="1852949e-c9b3-463c-a382-1e6bdc92c6ab.png"><img src="a7069632-c21a-4b13-bff4-3bbbf3bd02ea.png"><img src="4c5988e7-30a4-44d3-8ae3-d6ef2a21cbcd.png"><img src="0f798a55-e280-462b-bd4f-333261ef516e.png"><img src="98d46d5c-ed58-4aff-bfb2-b1dd9bc7d6da.png"><img src="98f2538a-96f0-40a1-a25c-7a3c8e442158.png"><img src="8b042062-5678-4084-ac04-0b5295df8aa8.png"><img src="25ac86f0-a0a2-4658-b98a-df9f1bba436d.png"><img src="38c7018f-1588-4e89-91cd-d159fe97d26e.png"><img src="872555b7-2c55-4ca2-ad53-68beb904abad.png"></div>
         </div>
     </div>
 
@@ -343,21 +341,15 @@
                     <p>细腻刻画高级 CMF（色彩、材料、表面处理）。珍珠白机身搭配香槟金边饰，精准还原亲肤磨砂质感与金属光泽的高保真 3D 渲染表现。</p>
                 </div>
             </div>
-            <div class="detail-gallery">
-                <img src="456.png"><img src="123.png"><img src="789.png"><img src="891.png"><img src="567.png"><img src="678.png"><img src="1011.png"><img src="1012.png">
-            </div>
+            <div class="detail-gallery"><img src="456.png"><img src="123.png"><img src="789.png"><img src="891.png"><img src="567.png"><img src="678.png"><img src="1011.png"><img src="1012.png"></div>
         </div>
     </div>
 
     <footer><p>© 2026 陈璐瑶 LUYAO CHEN - 保留所有权利</p></footer>
 
     <script>
-        /* 详情页逻辑 */
         function openDetail(id) { document.getElementById(id).classList.add('active'); document.body.style.overflow = 'hidden'; }
-        function closeDetail(id) { 
-            document.getElementById(id).classList.remove('active'); 
-            if(document.body.classList.contains('splash-active')) document.body.style.overflow = 'auto'; 
-        }
+        function closeDetail(id) { document.getElementById(id).classList.remove('active'); if(document.body.classList.contains('splash-active')) document.body.style.overflow = 'auto'; }
 
         document.addEventListener('DOMContentLoaded', () => {
             /* 1. 物理气泡引擎 */
@@ -373,11 +365,8 @@
             bubbles.forEach((el, index) => {
                 const targetX = startX + index * (bubbleSize + 20);
                 bubbleData.push({
-                    el: el,
-                    x: targetX + (Math.random() * 100 - 50),
-                    y: startY + (Math.random() * 100 - 50),
-                    targetX: targetX, targetY: startY,
-                    vx: 0, vy: 0,
+                    el: el, x: targetX + (Math.random() * 100 - 50), y: startY + (Math.random() * 100 - 50),
+                    targetX: targetX, targetY: startY, vx: 0, vy: 0,
                     driftX: Math.random() * 1000, driftY: Math.random() * 1000
                 });
             });
@@ -389,27 +378,12 @@
             function animateBubbles() {
                 if(!document.body.classList.contains('splash-active')) {
                     bubbleData.forEach(b => {
-                        let dx = (b.x + bubbleSize/2) - mouseX;
-                        let dy = (b.y + bubbleSize/2) - mouseY;
-                        let dist = Math.sqrt(dx*dx + dy*dy);
-                        if (dist < 200) { 
-                            let force = (200 - dist) / 200;
-                            b.vx += (dx / dist) * force * 2.5;
-                            b.vy += (dy / dist) * force * 2.5;
-                        }
-
+                        let dx = (b.x + bubbleSize/2) - mouseX; let dy = (b.y + bubbleSize/2) - mouseY; let dist = Math.sqrt(dx*dx + dy*dy);
+                        if (dist < 200) { let force = (200 - dist) / 200; b.vx += (dx / dist) * force * 2.5; b.vy += (dy / dist) * force * 2.5; }
                         b.driftX += 0.01; b.driftY += 0.01;
-                        let organicX = Math.sin(b.driftX) * 0.8;
-                        let organicY = Math.cos(b.driftY) * 0.8;
-
-                        b.vx += (b.targetX - b.x) * 0.02 + organicX;
-                        b.vy += (b.targetY - b.y) * 0.02 + organicY;
-                        
-                        b.vx *= 0.92; b.vy *= 0.92;
-                        b.x += b.vx; b.y += b.vy;
-                        
-                        b.el.style.left = `${b.x}px`;
-                        b.el.style.top = `${b.y}px`;
+                        b.vx += (b.targetX - b.x) * 0.02 + Math.sin(b.driftX) * 0.8; b.vy += (b.targetY - b.y) * 0.02 + Math.cos(b.driftY) * 0.8;
+                        b.vx *= 0.92; b.vy *= 0.92; b.x += b.vx; b.y += b.vy;
+                        b.el.style.left = `${b.x}px`; b.el.style.top = `${b.y}px`;
                     });
                     requestAnimationFrame(animateBubbles);
                 }
@@ -417,13 +391,11 @@
             animateBubbles();
 
             /* 2. 拉开大幕转场逻辑 */
-            let hasScrolled = false;
-            const navbar = document.getElementById('navbar');
+            let hasScrolled = false; const navbar = document.getElementById('navbar');
             window.addEventListener('wheel', (e) => {
                 if (hasScrolled) return;
                 if (e.deltaY > 20 || e.deltaY < -20) { 
-                    hasScrolled = true;
-                    document.body.classList.add('splash-active');
+                    hasScrolled = true; document.body.classList.add('splash-active');
                     setTimeout(() => { navbar.classList.add('scrolled'); }, 800);
                     setTimeout(() => { splashCover.style.display = 'none'; }, 1200); 
                 }
@@ -431,19 +403,35 @@
 
             window.addEventListener('touchmove', () => {
                 if (!hasScrolled) {
-                    hasScrolled = true;
-                    document.body.classList.add('splash-active');
+                    hasScrolled = true; document.body.classList.add('splash-active');
                     setTimeout(() => { navbar.classList.add('scrolled'); }, 800);
                     setTimeout(() => { splashCover.style.display = 'none'; }, 1200); 
                 }
             }, { passive: true });
 
-            /* 3. 卡片滚动浮现 */
-            const revealElements = document.querySelectorAll('.reveal');
-            const revealObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
-            }, { threshold: 0.1 });
-            revealElements.forEach(el => revealObserver.observe(el));
+            /* 3. 🎯 核心黑科技：Apple级视频按需懒加载流控制 */
+            const videoObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const video = entry.target.querySelector('video');
+                    if (video) {
+                        if (entry.isIntersecting) {
+                            // 卡片进入视口：注入视频流并开始播放
+                            if (!video.src && video.querySelector('source')) {
+                                video.src = video.querySelector('source').src;
+                            }
+                            video.play().catch(()=>{});
+                            entry.target.classList.add('active'); // 配合卡片上浮
+                        } else {
+                            // 卡片离开视口：彻底暂停，释放CPU与网络带宽
+                            video.pause();
+                        }
+                    } else if (entry.isIntersecting) {
+                        entry.target.classList.add('active'); // 无视频卡片常规浮现
+                    }
+                });
+            }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+
+            document.querySelectorAll('.reveal').forEach(el => videoObserver.observe(el));
 
             /* 4. 图片容错 */
             const comfyImg = document.getElementById('magic-comfy-img');
