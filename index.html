@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>陈璐瑶 | AIGC 设计师作品集</title>
+    <style>
+        /* ================= 基础与排版 ================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif; 
+            background-color: #050505; color: #f5f5f7; 
+            line-height: 1.6; overflow: hidden; scroll-behavior: smooth;
+        }
+        
+        /* 全局流体毛玻璃背景 */
+        #ambient-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2; overflow: hidden; background: #000; }
+        .blob { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.5; animation: floatGlobal 20s infinite alternate ease-in-out; }
+        .blob-1 { width: 45vw; height: 45vw; background: #230842; top: -10%; left: -10%; } 
+        .blob-2 { width: 55vw; height: 55vw; background: #081e3a; bottom: -20%; right: -15%; animation-delay: -5s; } 
+        .glass-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; backdrop-filter: blur(80px); -webkit-backdrop-filter: blur(80px); z-index: -1; }
+        @keyframes floatGlobal { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(5%, 10%) scale(1.1); } }
+
+        /* ================= 1. 沉浸式物理气泡封面 (Splash Cover) ================= */
+        .splash-cover {
+            height: 100vh; width: 100%; position: fixed; top: 0; left: 0;
+            background-color: #000000; z-index: 2000; 
+            transition: transform 1.2s cubic-bezier(0.66, 0, 0.2, 1);
+        }
+        body.splash-active .splash-cover { transform: translateY(-100vh); } 
+        body.splash-active { overflow-y: auto; } 
+
+        #bubble-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+
+        .letter-bubble {
+            position: absolute; 
+            width: 100px; height: 100px; 
+            display: flex; justify-content: center; align-items: center;
+            font-size: 3.5rem; font-weight: 900; color: #ffffff;
+            border-radius: 50%; background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: inset 0 15px 20px rgba(255, 255, 255, 0.15), inset 0 -15px 25px rgba(0, 0, 0, 0.6), 0 15px 30px rgba(0, 0, 0, 0.4);             
+            pointer-events: auto; 
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, background 0.3s ease;
+        }
+        .letter-bubble:hover {
+            transform: scale(1.15); background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: inset 0 15px 30px rgba(255, 255, 255, 0.3), 0 0 40px rgba(255, 255, 255, 0.15); z-index: 100;
+        }
+
+        .discover-hint {
+            position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+            font-size: 0.85rem; color: #666; letter-spacing: 3px; 
+            animation: bounceHint 2s infinite; text-transform: uppercase;
+        }
+        @keyframes bounceHint { 0%, 100% { bottom: 40px; } 50% { bottom: 50px; } }
+
+        /* ================= 2. 导航栏 ================= */
+        nav { 
+            position: fixed; top: -80px; width: 100%; padding: 20px 50px; 
+            background: rgba(5, 5, 5, 0.6); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05); z-index: 999; 
+            transition: top 0.5s cubic-bezier(0.16, 1, 0.3, 1); 
+        }
+        nav.scrolled { top: 0; } 
+        nav h3 { font-size: 1.1rem; font-weight: 600; letter-spacing: 2px; }
+
+        /* ================= 3. 个人简介区 ================= */
+        .profile-section { 
+            min-height: 60vh; display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            text-align: center; padding: 120px 20px 40px;
+        }
+        .avatar { width: 140px; height: 140px; border-radius: 50%; object-fit: cover; margin-bottom: 30px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
+        .profile-section h2 { font-size: 2.8rem; font-weight: 800; margin-bottom: 15px; background: linear-gradient(135deg, #fff 0%, #86868b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
+        .profile-section p { font-size: 1.1rem; color: #a1a1a6; font-weight: 400; letter-spacing: 1px;}
+
+        /* ================= 4. 首页项目列表 ================= */
+        .projects-grid { padding: 0 10% 100px; max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 80px; }
+        .section-title { font-size: 1.8rem; margin-bottom: 40px; color: #444; font-weight: 700; letter-spacing: 2px; text-align: center; }
+        
+        .project-card { 
+            background: rgba(30, 30, 30, 0.3); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 28px; padding: 50px; 
+            cursor: pointer; transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); position: relative; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        .project-card:hover { transform: translateY(-10px) scale(1.01); background: rgba(40, 40, 40, 0.4); border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);}
+        .project-card > * { pointer-events: none; } 
+        .project-card video.cover-video, .project-card img.cover-image { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 16px; margin-bottom: 30px; transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); display: block; background-color: #111;}
+        .project-card:hover video.cover-video, .project-card:hover img.cover-image { transform: scale(1.03); }
+        .project-card h3 { font-size: 1.8rem; margin-bottom: 12px; color: #ffffff; letter-spacing: 0.5px;}
+        .project-card p { color: #a1a1a6; font-size: 1rem; margin-bottom: 25px; line-height: 1.7;}
+        .tags { display: flex; gap: 12px; flex-wrap: wrap; }
+        .tags span { font-size: 0.8rem; color: #d2d2d7; background: rgba(255, 255, 255, 0.05); padding: 6px 16px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); font-weight: 500;}
+        .reveal { opacity: 0; transform: translateY(60px); transition: all 1s cubic-bezier(0.16, 1, 0.3, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* ================= 5. 全屏详情页面板 ================= */
+        .detail-panel {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
+            z-index: 10000; overflow-y: auto; transform: translateY(100%); opacity: 0;
+            visibility: hidden; pointer-events: none; 
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease, visibility 0.6s;
+            padding: 120px 20px 50px;
+        }
+        .detail-panel.active { transform: translateY(0); opacity: 1; visibility: visible; pointer-events: auto; }
+        .close-btn { position: fixed; top: 30px; right: 50px; background: rgba(255,255,255,0.1); color: white; border: none; padding: 12px 28px; border-radius: 30px; cursor: pointer; font-weight: 500; backdrop-filter: blur(20px); transition: all 0.3s ease; z-index: 10001; font-size: 0.95rem; }
+        .close-btn:hover { background: #ffffff; color: #000000; transform: scale(1.05); }
+        .detail-content { max-width: 960px; margin: 0 auto; }
+        .detail-header { text-align: left; margin-bottom: 60px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 40px; }
+        .detail-header h1 { font-size: 2.8rem; margin-bottom: 15px; font-weight: 800; line-height: 1.2; letter-spacing: -0.5px;}
+        
+        /* 🎯 重点保留了你的文字介绍块样式 */
+        .info-block { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px; margin-bottom: 60px; text-align: left; }
+        .info-item h4 { color: #86868b; font-size: 0.85rem; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 2px; }
+        .info-item p { color: #f5f5f7; font-size: 1rem; line-height: 1.7;}
+
+        .detail-gallery img { width: 100%; border-radius: 20px; margin-bottom: 40px; box-shadow: 0 30px 60px rgba(0,0,0,0.5); }
+        footer { text-align: center; padding: 60px 20px; color: #666; font-size: 0.85rem; letter-spacing: 1px; }
+
+        @media (max-width: 768px) { .letter-bubble { width: 60px; height: 60px; font-size: 2rem; } }
+    </style>
+</head>
+<body>
+
+    <div id="ambient-bg"><div class="blob blob-1"></div><div class="blob blob-2"></div><div class="glass-overlay"></div></div>
+
+    <section class="splash-cover" id="splash-cover">
+        <div id="bubble-container">
+            <div class="letter-bubble">C</div><div class="letter-bubble">H</div><div class="letter-bubble">E</div><div class="letter-bubble">N</div><div class="letter-bubble">L</div><div class="letter-bubble">U</div><div class="letter-bubble">Y</div><div class="letter-bubble">A</div><div class="letter-bubble">O</div>
+        </div>
+        <div class="discover-hint">向下滚动 SCROLL TO DISCOVER</div>
+    </section>
+
+    <nav id="navbar"><h3>CHENLUYAO.</h3></nav>
+
+    <section class="profile-section">
+        <img src="avatar.jpg" alt="陈璐瑶" class="avatar">
+        <h2>陈璐瑶</h2>
+        <p>台州学院设计学硕士 | AIGC智能视觉与产品设计师</p>
+    </section>
+
+    <section class="projects-grid">
+        <h2 class="section-title reveal">— 精选项目 —</h2>
+
+        <div class="project-card reveal" onclick="openDetail('detailSpark')">
+            <video autoplay loop muted playsinline class="cover-video"><source src="cover5.mp4" type="video/mp4"></video>
+            <h3>「SPARK+」能量气泡饮视觉全案</h3>
+            <p>探索 AI 在新消费领域的全链路赋能。从产品 KV、包装设计到电商详情与视频分镜，利用 AIGC 工作流实现高效率落地的商业视觉资产。</p>
+            <div class="tags"><span># 新消费品广告</span><span># 包装全案设计</span><span># AIGC全链路</span></div>
+        </div>
+
+        <div class="project-card reveal" onclick="openDetail('detailFutureSense')">
+            <video autoplay loop muted playsinline class="cover-video"><source src="cover2.MP4" type="video/mp4"></video>
+            <h3>《Future Sense Festival》青年艺术节主视觉</h3>
+            <p>沉浸式青年艺术节视觉系统设计。运用 ComfyUI 工作流实现数字自然（Cyber Nature）的高质感稳定输出。</p>
+            <div class="tags"><span># AIGC主视觉</span><span># ComfyUI工作流</span></div>
+        </div>
+
+        <div class="project-card reveal" onclick="openDetail('detailWuchuan')">
+            <video autoplay loop muted playsinline class="cover-video"><source src="cover.mp4" type="video/mp4"></video>
+            <h3>「雾川 WUCHUAN」城市气味香氛品牌设计</h3>
+            <p>东方极简静物美学，打通从 MJ 商业概念到 SD 高精度视觉落地的全链路闭环。</p>
+            <div class="tags"><span># AIGC 视觉构建</span><span># 品牌概念全案</span></div>
+        </div>
+
+        <div class="project-card reveal" onclick="openDetail('detailIP')">
+            <video autoplay loop muted playsinline class="cover-video"><source src="cover3.mp4" type="video/mp4"></video>
+            <h3>《凤小啾 FENGXIAOJIU》3D 潮玩 IP 全案</h3>
+            <p>从数字资产到潮玩盲盒全生命周期企划。打磨高质感的 3D 盲盒材质表现，完成从三视图到包装的系统设计。</p>
+            <div class="tags"><span># 3D潮玩设计</span><span># 盲盒企划</span></div>
+        </div>
+        
+        <div class="project-card reveal" onclick="openDetail('detailAura')">
+            <video autoplay loop muted playsinline class="cover-video"><source src="cover4.mp4" type="video/mp4"></video>
+            <h3>「AURA 光冕」先锋首饰品牌全案</h3>
+            <p>探索独立珠宝品牌的数字化构建。结合 3D 精密建模与 AIGC 视觉工作流，完成从品牌视觉到 Lookbook 的全链路设计。</p>
+            <div class="tags"><span># 首饰产品设计</span><span># AIGC时尚大片</span></div>
+        </div>
+
+        <div class="project-card reveal" onclick="openDetail('detailNova')">
+            <video autoplay loop muted playsinline class="cover-video"><source src="cover6.mp4" type="video/mp4"></video>
+            <h3>「NOVA SCALP」智能头皮护理仪工业设计</h3>
+            <p>探索科技与个护的融合。从产品定义、严谨的爆炸结构拆解到极具呼吸感的 CMF 材质渲染。</p>
+            <div class="tags"><span># 工业设计</span><span># CMF材质表现</span></div>
+        </div>
+    </section>
+
+    <div id="detailSpark" class="detail-panel">
+        <button class="close-btn" onclick="closeDetail('detailSpark')">← 关 闭</button>
+        <div class="detail-content">
+            <div class="detail-header">
+                <h1>「SPARK+」AI 辅助新消费能量饮广告视觉全案</h1>
+                <p style="color:#a1a1a6; font-size:1.2rem;">SPARK YOUR DAY. 点燃今日状态。</p>
+            </div>
+            <div class="info-block">
+                <div class="info-item">
+                    <h4>设计概念 / Concept</h4>
+                    <p>SPARK+ 是一款面向 Z 世代的能量气泡饮。设计语言强调“瞬间爆发”的能量感与极度冰爽的感官体验。通过高饱和度的色彩与动感的流体溅射，传达品牌的核心精神。</p>
+                </div>
+                <div class="info-item">
+                    <h4>商业应用 / Application</h4>
+                    <p>涵盖了包装系统、主视觉 KV、天猫详情页、直播间背景及社媒矩阵图（Social Media）。并特别输出了 10s 短视频分镜，完成了从静态到动态的全面覆盖。</p>
+                </div>
+                <div class="info-item">
+                    <h4>AIGC 流程 / AI Workflow</h4>
+                    <p>展示了高效的 AIGC 商业管线：AI 营销方向探索 → 多场景 AI 生成 → 包装设计与 3D 建模 → 产品与场景合成 → 详情页与社媒排版落地，产出效率提升 300% 以上。</p>
+                </div>
+            </div>
+            <div class="detail-gallery">
+                <img src="07.png"><img src="01.png"><img src="02.png"><img src="04.png"><img src="06.png"><img src="05.png">
+            </div>
+        </div>
+    </div>
+
+    <div id="detailFutureSense" class="detail-panel">
+        <button class="close-btn" onclick="closeDetail('detailFutureSense')">← 关 闭</button>
+        <div class="detail-content">
+            <div class="detail-header">
+                <h1>《Future Sense Festival：AIGC辅助青年艺术节主视觉设计》</h1>
+                <p style="color:#a1a1a6; font-size:1.2rem;">一个关于 AI、音乐、城市夜游与数字自然的沉浸式青年艺术节视觉系统设计</p>
+            </div>
+            <div class="info-block">
+                <div class="info-item">
+                    <h4>活动设定 / Event Profile</h4>
+                    <p><strong>时间：</strong>2025.08.15 – 08.17<br><strong>地点：</strong>上海（西岸艺术中心、沿江夜游区域、工业遗址空间）<br><strong>受众：</strong>18–30岁热爱音乐、数字艺术及社交传播的年轻用户。</p>
+                </div>
+                <div class="info-item">
+                    <h4>活动形式 / Experience</h4>
+                    <p>包含音乐演出、AI影像装置、交互艺术展、夜游路线、快闪市集及沉浸式光影空间，打造全方位的城市青年文化体验。</p>
+                </div>
+                <div class="info-item">
+                    <h4>AIGC 工作流 / Workflow</h4>
+                    <p>运用 <strong>ComfyUI</strong> 搭建专属工作流，结合 SDXL 模型与精准的 ControlNet 控制，实现数字自然（Cyber Nature）与液态发光材质的高质感稳定输出。</p>
+                </div>
+            </div>
+            <div class="detail-gallery">
+                <img src="b82ea666-32af-4b04-bc75-3bce024d17b2.png" alt="主视觉"><img src="1.png"><img src="2.png"><img src="3.png"><img src="4.png"><img src="2c3c9cb0-597d-4085-b67e-454ad3bf930f.png"><img src="a4adbc92-74cb-4b4a-a8ef-edad080eab67.png"><img src="0afe1c7b-589a-4b2d-b29b-ec2c04988505.png"><img src="fee3b895-510f-4074-b63d-8ce245238867.png"><img id="magic-comfy-img" alt="ComfyUI">
+            </div>
+        </div>
+    </div>
+
+    <div id="detailWuchuan" class="detail-panel">
+        <button class="close-btn" onclick="closeDetail('detailWuchuan')">← 关 闭</button>
+        <div class="detail-content">
+            <div class="detail-header">
+                <h1>「雾川 WUCHUAN」城市气味香氛品牌设计</h1>
+                <p style="color:#a1a1a6; font-size:1.2rem;">探索东方美学与人工智能生产力的无缝融合</p>
+            </div>
+            <div class="info-block">
+                <div class="info-item">
+                    <h4>设计概念 / Concept</h4>
+                    <p>以“一座城的嗅觉记忆”为切入点，将上海（现代雨夜、老洋房玻璃幕墙）与杭州（西湖水汽、龙井茶山）的地域文化碎片转化为具体的感官视觉符号。</p>
+                </div>
+                <div class="info-item">
+                    <h4>AIGC 工作流 / Workflow</h4>
+                    <p>利用 Midjourney 生成极具质感的光影和宣纸/烫金纹理意象；通过 Stable Diffusion 约束瓶身结构与视角稳定性；最后配合 Photoshop 进行高精度的商业排版与色彩管理。</p>
+                </div>
+                <div class="info-item">
+                    <h4>核心价值 / Value</h4>
+                    <p>展现了“懂实体产品逻辑（工业设计底子）+ 掌握 AI 顶级生产力”的复合能力，极大地缩短了虚拟消费品牌从概念创意到高精度视觉资产的研发周期。</p>
+                </div>
+            </div>
+            <div class="detail-gallery">
+                <img src="pic1.png"><img src="pic2.png"><img src="pic3.png"><img src="pic4.png"><img src="pic5.png"><img src="wuchuan.png">
+            </div>
+        </div>
+    </div>
+
+    <div id="detailIP" class="detail-panel">
+        <button class="close-btn" onclick="closeDetail('detailIP')">← 关 闭</button>
+        <div class="detail-content">
+            <div class="detail-header">
+                <h1>《凤小啾 FENGXIAOJIU》3D潮玩IP设计与孵化全案</h1>
+                <p style="color:#a1a1a6; font-size:1.2rem;">探索数字角色资产向实体潮玩商业转化的全链路盲盒企划</p>
+            </div>
+            <div class="info-block">
+                <div class="info-item">
+                    <h4>角色设定 / IP Profile</h4>
+                    <p>凤小啾，一只拥有幻化能力的数字潮流精灵。以高辨识度的暗金与奇幻紫为主色调，能够结合不同的潮流时空穿梭变换百变造型，传递陪伴与治愈的潮玩理念。</p>
+                </div>
+                <div class="info-item">
+                    <h4>材质与表现 / 3D LookDev</h4>
+                    <p>精准把控实体潮玩质感表现，模拟真实的 PVC 与 ABS 材质光影，配合精细的表面高光与哑光对比，使得数字模型具备极高的实物开模参考价值。</p>
+                </div>
+                <div class="info-item">
+                    <h4>商业延展 / Commercial Value</h4>
+                    <p>输出了标准工业三视图、包装设计概念，并完成了多维度的主题盲盒系列化延展（如：宇航员、魔法师、新春款等），具备直接对接潮玩供应链的成熟度。</p>
+                </div>
+            </div>
+            <div class="detail-gallery">
+                <img src="封面.png"><img src="三视图注释.png"><img src="c85d1970-3cfa-4207-af40-b661847b61d2.png"><img src="宇航员.png"><img src="魔法师.png"><img src="新春款.png"><img src="甜品.png"><img src="校服.png"><img src="睡衣款.png">
+            </div>
+        </div>
+    </div>
+
+    <div id="detailAura" class="detail-panel">
+        <button class="close-btn" onclick="closeDetail('detailAura')">← 关 闭</button>
+        <div class="detail-content">
+            <div class="detail-header">
+                <h1>「AURA 光冕」独立首饰品牌视觉与产品设计全案</h1>
+                <p style="color:#a1a1a6; font-size:1.2rem;">WE CROWN OURSELVES. 我们为自己加冕。</p>
+            </div>
+            <div class="info-block">
+                <div class="info-item">
+                    <h4>品牌概念 / Brand Identity</h4>
+                    <p>以“光冕”为核心意象，提取光环（Halo）、锋芒（Edge）、盾牌（Shield）等几何符号，塑造女性独立、自我加冕的先锋力量与美学态度。</p>
+                </div>
+                <div class="info-item">
+                    <h4>数字工艺 / Digital Craft</h4>
+                    <p>展示扎实的工业结构与产品逻辑。从严谨的底层线框构建（Model View）到正侧俯三视图推敲，并进行高保真渲染，完美还原 925 银的冷硬光泽与宝石的璀璨折射。</p>
+                </div>
+                <div class="info-item">
+                    <h4>AIGC 赋能 / AI Integration</h4>
+                    <p>打破传统珠宝宣发的局限，运用 AIGC 工作流高效生成具备极强奢侈品感的高级时尚模特佩戴图（Lookbook）与高端商业空间氛围，极大拓展了数字资产的商业边界。</p>
+                </div>
+            </div>
+            <div class="detail-gallery">
+                <img src="b1a79722-bb86-4372-bc14-6fc55147543c.png"><img src="2c668bbd-e1a3-4eb8-85c0-960d716d1795.png"><img src="1852949e-c9b3-463c-a382-1e6bdc92c6ab.png"><img src="a7069632-c21a-4b13-bff4-3bbbf3bd02ea.png"><img src="4c5988e7-30a4-44d3-8ae3-d6ef2a21cbcd.png"><img src="0f798a55-e280-462b-bd4f-333261ef516e.png"><img src="98d46d5c-ed58-4aff-bfb2-b1dd9bc7d6da.png"><img src="98f2538a-96f0-40a1-a25c-7a3c8e442158.png"><img src="8b042062-5678-4084-ac04-0b5295df8aa8.png"><img src="25ac86f0-a0a2-4658-b98a-df9f1bba436d.png"><img src="38c7018f-1588-4e89-91cd-d159fe97d26e.png"><img src="872555b7-2c55-4ca2-ad53-68beb904abad.png">
+            </div>
+        </div>
+    </div>
+
+    <div id="detailNova" class="detail-panel">
+        <button class="close-btn" onclick="closeDetail('detailNova')">← 关 闭</button>
+        <div class="detail-content">
+            <div class="detail-header">
+                <h1>「NOVA SCALP」智能头皮护理仪产品设计全案</h1>
+                <p style="color:#a1a1a6; font-size:1.2rem;">TECHNOLOGY × CARE × WELLNESS. 科技呵护头皮，焕发健康活力。</p>
+            </div>
+            <div class="info-block">
+                <div class="info-item">
+                    <h4>设计概念 / Design Concept</h4>
+                    <p>结合人体工学与现代极简美学，打造流线型握持曲线与优雅的底座收纳，打破传统理疗仪的医疗感，赋予其家居艺术品的呼吸感。</p>
+                </div>
+                <div class="info-item">
+                    <h4>结构解析 / Structure & Tech</h4>
+                    <p>深入工业落地逻辑。输出严谨的产品爆炸图与细节解析，涵盖精密梳齿排布、磁吸充电系统及核心驱动模组，展现扎实的硬核设计底子。</p>
+                </div>
+                <div class="info-item">
+                    <h4>材质表现 / CMF LookDev</h4>
+                    <p>细腻刻画高级 CMF（色彩、材料、表面处理）。珍珠白机身搭配香槟金边饰，精准还原亲肤磨砂质感与金属光泽的高保真 3D 渲染表现。</p>
+                </div>
+            </div>
+            <div class="detail-gallery">
+                <img src="456.png"><img src="123.png"><img src="789.png"><img src="891.png"><img src="567.png"><img src="678.png"><img src="1011.png"><img src="1012.png">
+            </div>
+        </div>
+    </div>
+
+    <footer><p>© 2026 陈璐瑶 LUYAO CHEN - 保留所有权利</p></footer>
+
+    <script>
+        /* 详情页逻辑 */
+        function openDetail(id) { document.getElementById(id).classList.add('active'); document.body.style.overflow = 'hidden'; }
+        function closeDetail(id) { 
+            document.getElementById(id).classList.remove('active'); 
+            if(document.body.classList.contains('splash-active')) document.body.style.overflow = 'auto'; 
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            /* 1. 物理气泡引擎 */
+            const bubbles = document.querySelectorAll('.letter-bubble');
+            const bubbleData = [];
+            let mouseX = -1000, mouseY = -1000;
+            const bubbleSize = window.innerWidth < 768 ? 60 : 100;
+
+            const totalWidth = bubbles.length * (bubbleSize + 20);
+            const startX = (window.innerWidth - totalWidth) / 2;
+            const startY = window.innerHeight / 2 - (bubbleSize / 2);
+
+            bubbles.forEach((el, index) => {
+                const targetX = startX + index * (bubbleSize + 20);
+                bubbleData.push({
+                    el: el,
+                    x: targetX + (Math.random() * 100 - 50),
+                    y: startY + (Math.random() * 100 - 50),
+                    targetX: targetX, targetY: startY,
+                    vx: 0, vy: 0,
+                    driftX: Math.random() * 1000, driftY: Math.random() * 1000
+                });
+            });
+
+            const splashCover = document.getElementById('splash-cover');
+            splashCover.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
+            splashCover.addEventListener('mouseleave', () => { mouseX = -1000; mouseY = -1000; });
+
+            function animateBubbles() {
+                if(!document.body.classList.contains('splash-active')) {
+                    bubbleData.forEach(b => {
+                        let dx = (b.x + bubbleSize/2) - mouseX;
+                        let dy = (b.y + bubbleSize/2) - mouseY;
+                        let dist = Math.sqrt(dx*dx + dy*dy);
+                        if (dist < 200) { 
+                            let force = (200 - dist) / 200;
+                            b.vx += (dx / dist) * force * 2.5;
+                            b.vy += (dy / dist) * force * 2.5;
+                        }
+
+                        b.driftX += 0.01; b.driftY += 0.01;
+                        let organicX = Math.sin(b.driftX) * 0.8;
+                        let organicY = Math.cos(b.driftY) * 0.8;
+
+                        b.vx += (b.targetX - b.x) * 0.02 + organicX;
+                        b.vy += (b.targetY - b.y) * 0.02 + organicY;
+                        
+                        b.vx *= 0.92; b.vy *= 0.92;
+                        b.x += b.vx; b.y += b.vy;
+                        
+                        b.el.style.left = `${b.x}px`;
+                        b.el.style.top = `${b.y}px`;
+                    });
+                    requestAnimationFrame(animateBubbles);
+                }
+            }
+            animateBubbles();
+
+            /* 2. 拉开大幕转场逻辑 */
+            let hasScrolled = false;
+            const navbar = document.getElementById('navbar');
+            window.addEventListener('wheel', (e) => {
+                if (hasScrolled) return;
+                if (e.deltaY > 20 || e.deltaY < -20) { 
+                    hasScrolled = true;
+                    document.body.classList.add('splash-active');
+                    setTimeout(() => { navbar.classList.add('scrolled'); }, 800);
+                    setTimeout(() => { splashCover.style.display = 'none'; }, 1200); 
+                }
+            }, { passive: true });
+
+            window.addEventListener('touchmove', () => {
+                if (!hasScrolled) {
+                    hasScrolled = true;
+                    document.body.classList.add('splash-active');
+                    setTimeout(() => { navbar.classList.add('scrolled'); }, 800);
+                    setTimeout(() => { splashCover.style.display = 'none'; }, 1200); 
+                }
+            }, { passive: true });
+
+            /* 3. 卡片滚动浮现 */
+            const revealElements = document.querySelectorAll('.reveal');
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
+            }, { threshold: 0.1 });
+            revealElements.forEach(el => revealObserver.observe(el));
+
+            /* 4. 图片容错 */
+            const comfyImg = document.getElementById('magic-comfy-img');
+            const possibleNames = ['future_sense_comfyui_mockup_screenshot.jpg','comfy.jpg','comfy.jpg.jpg','comfy.png'];
+            let currIdx = 0;
+            if (comfyImg) {
+                comfyImg.onerror = () => { currIdx++; if(currIdx < possibleNames.length) comfyImg.src = possibleNames[currIdx]; };
+                comfyImg.src = possibleNames[0];
+            }
+        });
+    </script>
+</body>
+</html>
